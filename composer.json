@@ -23,7 +23,8 @@
             "database/factories"
         ],
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "AltAutoTrader\\": "app/AltAutoTrader/"
         }
     },
     "autoload-dev": {
