@@ -24,7 +24,7 @@ class ExchangeRateController extends Controller
 
         if (!$assets['error']) {
             foreach ($assets['result'] as $asset => $details) {
-                if ($details['quote'] === 'ZUSD' && substr($asset, -2) != '.d') {
+                if (substr($asset, -2) != '.d') { //no idea what these pairs are, but they seem like duplicates
                     $exchangeRate = new \App\ExchangeRate();
                     $exchangeRate->fill([
                         'name' => $asset,
@@ -69,19 +69,19 @@ class ExchangeRateController extends Controller
                         ->where('name', $rate)
                         ->first();
 
-                if ($rate) {
-                    //update the rate with the latest data
-                    $rate->ask_rate = $details['a'][0];
-                    $rate->bid_rate = $details['b'][0];
-                    $rate->save();
+                //update the rate with the latest data
+                $rate->ask_rate = $details['a'][0];
+                $rate->bid_rate = $details['b'][0];
+                $rate->save();
 
-                    //create new historic entry
+                if ($rate->counter_iso === 'ZUSD') { //create new historic entry only for rates against USD
                     (new ExchangeRateLog())->fill([
                         'exchange_rate_id' => $rate->id,
                         'ask_rate' => $details['a'][0],
                         'bid_rate' => $details['b'][0],
                     ])->save();
                 }
+
             }
         }
     }
