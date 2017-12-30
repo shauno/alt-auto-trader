@@ -4,12 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ExchangeRate extends Model
+class ExchangeRateLog extends Model
 {
     protected $fillable = [
-        'name',
-        'base_iso',
-        'counter_iso',
+        'exchange_rate_id',
         'ask_rate',
         'bid_rate',
     ];
