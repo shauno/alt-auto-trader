@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use AltAutoTrader\ExchangeRates\ExchangeRateRepositoryEloquent;
 use AltAutoTrader\Lib\KrakenApi;
 use AltAutoTrader\Lib\KrakenApiException;
 use App\ExchangeRate;
@@ -12,6 +13,13 @@ use Illuminate\Support\Collection;
 
 class ExchangeRateController extends Controller
 {
+    protected $exchangeRateRepository;
+
+    public function __construct(ExchangeRateRepositoryEloquent $exchangeRateRepository)
+    {
+        $this->exchangeRateRepository = $exchangeRateRepository;
+    }
+
     public function createExchangeRates()
     {
         $api = new KrakenApi(env('KRAKEN_API_KEY'), env('KRAKEN_API_SECRET'));
@@ -84,5 +92,36 @@ class ExchangeRateController extends Controller
 
             }
         }
+    }
+
+    public function trackExchangeRates()
+    {
+        /** @var Collection $exchangeRates */
+        $exchangeRates = (new ExchangeRate())
+            ->where('counter_iso', 'ZUSD')
+            ->get();
+
+        $best = [
+            'name' => null,
+            'change' => 0,
+        ];
+
+        foreach($exchangeRates as $rate) {
+            $change = $this->exchangeRateRepository->trackTrend($rate);
+
+            if ($change > $best['change']) {
+                $best['name'] = $rate->name;
+                $best['change'] = $change;
+            }
+        }
+
+        var_dump($best);
+
+        if ($best['name']) { //trade to this
+
+        } else { //trade to USD
+            
+        }
+
     }
 }
