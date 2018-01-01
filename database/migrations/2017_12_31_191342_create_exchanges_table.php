@@ -16,6 +16,7 @@ class CreateExchangesTable extends Migration
         Schema::create('exchanges', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('slug')->unique();
             $table->string('api_base_url');
             $table->string('driver');
             $table->timestamps();

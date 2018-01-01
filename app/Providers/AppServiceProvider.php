@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Exchange;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        \Route::bind('exchange', function ($value) {
+            return Exchange::where('slug', $value)->first() ?? abort(404);
+        });
     }
 
     /**
