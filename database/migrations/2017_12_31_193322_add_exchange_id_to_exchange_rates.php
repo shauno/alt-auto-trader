@@ -27,6 +27,7 @@ class AddExchangeIdToExchangeRates extends Migration
     public function down()
     {
         Schema::table('exchange_rates', function (Blueprint $table) {
+            $table->dropForeign('exchange_rates_exchange_id_foreign');
             $table->dropColumn('exchange_id');
         });
     }

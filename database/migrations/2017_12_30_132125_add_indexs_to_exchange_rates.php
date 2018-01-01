@@ -26,7 +26,7 @@ class AddIndexsToExchangeRates extends Migration
     public function down()
     {
         Schema::table('exchange_rate_logs', function (Blueprint $table) {
-            $table->dropIndex('created_at');
+            $table->dropIndex('exchange_rate_logs_created_at_index');
         });
     }
 }

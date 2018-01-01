@@ -17,6 +17,7 @@ class CreateExchangesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('api_base_url');
+            $table->string('driver');
             $table->timestamps();
         });
     }
