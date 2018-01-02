@@ -14,7 +14,3 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/exchange-rates/create', [ 'uses' => 'ExchangeRateController@createExchangeRates']);
-Route::get('/exchange-rates/update', [ 'uses' => 'ExchangeRateController@updateExchangeRates']);
-Route::get('/exchange-rates/track', [ 'uses' => 'ExchangeRateController@trackExchangeRates']);

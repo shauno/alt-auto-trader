@@ -64,10 +64,10 @@ class ExchangeRateController extends Controller
         return $exchangeRates;
     }
 
-    public function trackExchangeRates()
+    public function track(ExchangeRate $exchange)
     {
         /** @var Collection $exchangeRates */
-        $exchangeRates = (new ExchangeRate())
+        $exchangeRates = ExchangeRate::where('exchange_id', $exchange->id)
             ->where('counter_iso', 'ZUSD')
             ->get();
 
