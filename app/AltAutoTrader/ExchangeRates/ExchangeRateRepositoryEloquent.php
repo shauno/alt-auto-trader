@@ -22,7 +22,6 @@ class ExchangeRateRepositoryEloquent
             ->orderBy('created_at', 'asc')
             ->get();
 
-
         return ($list->last()->bid_rate - $list->first()->bid_rate) / $list->first()->bid_rate;
     }
 }

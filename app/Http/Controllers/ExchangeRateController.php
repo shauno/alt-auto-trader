@@ -27,13 +27,17 @@ class ExchangeRateController extends Controller
 
         $rates = $api->getExchangeRatesFromExchange();
 
+        $return = [];
         foreach ($rates as $rate) {
             $exists = ExchangeRate::where('exchange_id', $exchange->id)->where('name', $rate->name)->first();
             if (!$exists) {
                 $rate->exchange_id = $exchange->id;
                 $rate->save();
+                $return[] = $rate;
             }
         }
+
+        return $return;
     }
 
     public function update(Exchange $exchange, string $rate)
@@ -78,8 +82,10 @@ class ExchangeRateController extends Controller
 
         foreach($exchangeRates as $rate) {
             $change = $this->exchangeRateRepository->trackTrend($rate);
+            $min5change = $this->exchangeRateRepository->trackTrend($rate, 5);
 
-            if ($change > $best['change']) {
+            //We want to best climber that isn't losing ground over the last 5 min
+            if ($change > $best['change'] && $min5change > 0) {
                 $best['name'] = $rate->name;
                 $best['change'] = $change;
             }
