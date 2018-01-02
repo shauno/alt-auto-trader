@@ -11,6 +11,14 @@ class PoloniexExchangeProvider implements ExchangeProviderInterface
     /**
      * @inheritdoc
      */
+    public function getUsdIso()
+    {
+        return 'USDT';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getExchangeRatesFromExchange() : Collection
     {
         $api = new Client([

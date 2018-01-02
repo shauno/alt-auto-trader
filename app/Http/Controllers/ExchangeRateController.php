@@ -70,9 +70,11 @@ class ExchangeRateController extends Controller
 
     public function track(Exchange $exchange)
     {
+        $provider = $exchange->getProvider();
+
         /** @var Collection $exchangeRates */
         $exchangeRates = ExchangeRate::where('exchange_id', $exchange->id)
-            ->where('counter_iso', 'USDT')
+            ->where('counter_iso', $provider->getUsdIso())
             ->get();
 
         $best = [
@@ -84,7 +86,7 @@ class ExchangeRateController extends Controller
             $change = $this->exchangeRateRepository->trackTrend($rate);
             $min5change = $this->exchangeRateRepository->trackTrend($rate, 5);
 
-            //We want to best climber that isn't losing ground over the last 5 min
+            //We want the best climber that isn't losing ground over the last 5 min
             if ($change > $best['change'] && $min5change > 0) {
                 $best['name'] = $rate->name;
                 $best['change'] = $change;

@@ -12,6 +12,14 @@ class KrakenExchangeProvider implements ExchangeProviderInterface
     /**
      * @inheritdoc
      */
+    public function getUsdIso()
+    {
+        return 'ZUSD';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getExchangeRatesFromExchange() : Collection
     {
         $api = new KrakenApi(env('KRAKEN_API_KEY'), env('KRAKEN_API_SECRET'));
