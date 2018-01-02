@@ -133,6 +133,8 @@ class KrakenApi
         curl_setopt($this->curl, CURLOPT_URL, $this->url . $path);
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $postdata);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($this->curl, CURLOPT_TIMEOUT, 10);
+
         $result = curl_exec($this->curl);
         if($result===false)
             throw new KrakenApiException('CURL error: ' . curl_error($this->curl));
