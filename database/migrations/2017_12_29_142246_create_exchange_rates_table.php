@@ -15,6 +15,8 @@ class CreateExchangeRatesTable extends Migration
     {
         Schema::create('exchange_rates', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('exchange_id')->unsigned();
+            $table->foreign('exchange_id')->references('id')->on('exchanges');
             $table->string('name', 255);
             $table->string('base_iso', 12);
             $table->string('counter_iso', 12);
@@ -22,6 +24,7 @@ class CreateExchangeRatesTable extends Migration
             $table->decimal('ask_rate', 32, 16);
             $table->decimal('bid_rate', 32, 16);
             $table->timestamps();
+            $table->index('created_at');
         });
     }
 
