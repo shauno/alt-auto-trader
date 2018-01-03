@@ -2,6 +2,7 @@
 
 namespace AltAutoTrader\Exchanges\Providers;
 
+use App\Exchange;
 use App\ExchangeRate;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
@@ -75,5 +76,15 @@ class PoloniexExchangeProvider implements ExchangeProviderInterface
         }
 
         return $exchangeRates;
+    }
+
+    public function getHeldAsset() : array
+    {
+        throw new \Exception('Still needs to be implemented for this provider');
+    }
+
+    public function convertHoldings(Exchange $exchange, string $wantedIso)
+    {
+        throw new \Exception('Still needs to be implemented for this provider');
     }
 }

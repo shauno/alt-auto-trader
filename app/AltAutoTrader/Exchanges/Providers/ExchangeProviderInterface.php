@@ -2,6 +2,7 @@
 
 namespace AltAutoTrader\Exchanges\Providers;
 
+use App\Exchange;
 use App\ExchangeRate;
 use Illuminate\Support\Collection;
 
@@ -24,4 +25,8 @@ interface ExchangeProviderInterface
      * @return Collection|ExchangeRate[]
      */
     public function getExchangeRatesTicker(Collection $exchangeRates) : Collection;
+
+    public function getHeldAsset() : array;
+
+    public function convertHoldings(Exchange $exchange, string $wantedIso);
 }
