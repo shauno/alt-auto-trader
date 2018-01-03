@@ -11,6 +11,16 @@
 |
 */
 
+use AltAutoTrader\Lib\KrakenApi;
+
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/test', function() {
+    $api = new \AltAutoTrader\Exchanges\Providers\LivecoinExchangeProvider();
+
+    $tmp = $api->getHeldAsset();
+
+    var_dump($tmp);
 });

@@ -84,7 +84,7 @@ class ExchangeRateController extends Controller
         ];
 
         foreach($exchangeRates as $rate) {
-            $change = $this->exchangeRateRepository->trackTrend($rate);
+            $change = $this->exchangeRateRepository->trackTrend($rate, 240);
             $min5change = $this->exchangeRateRepository->trackTrend($rate, 5);
 
             //magic thumb suck algorithm for spotting a climber*
