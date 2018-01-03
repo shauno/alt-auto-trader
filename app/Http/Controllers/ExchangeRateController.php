@@ -94,11 +94,12 @@ class ExchangeRateController extends Controller
         }
 
         //TODO remove hard coded thing here
-        $best['pair'] = ExchangeRate::where('name', 'XETHZUSD')->first();
+        //$best['pair'] = ExchangeRate::where('name', 'XETHZUSD')->first();
 
-        $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
+        //$order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
+        //var_dump($order);
 
-        var_dump($order);
+        var_dump($best);
     }
 
     protected function findPathToAsset(Exchange $exchange, $wantedIso, $heldIso)
