@@ -22,5 +22,5 @@ Route::prefix('v1')->group(function() {
     Route::resource('exchange.exchange-rates', 'ExchangeRateController', [
         'only' => ['store', 'update']
     ]);
-    Route::get('exchange/{exchange}/exchange-rates/track', ['uses' => 'ExchangeRateController@track']);
+    Route::get('exchange/{exchange}/exchange-rates/track/{convert?}', ['uses' => 'ExchangeRateController@track']);
 });

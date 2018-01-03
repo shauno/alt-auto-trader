@@ -75,6 +75,7 @@ class LivecoinExchangeProvider implements ExchangeProviderInterface
         foreach ($exchangeRates as $exchangeRate) {
             $exchangeRate->ask_rate = $keyedRates[$exchangeRate->name]->best_ask;
             $exchangeRate->bid_rate = $keyedRates[$exchangeRate->name]->best_bid;
+            $exchangeRate->volume_24 = $keyedRates[$exchangeRate->name]->volume;
             if ($exchangeRate->counter_iso === $this->getUsdIso()) {
                 $exchangeRate->logHistory = true;
             }

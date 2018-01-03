@@ -68,13 +68,14 @@ class ExchangeRateController extends Controller
         return $exchangeRates;
     }
 
-    public function track(Exchange $exchange)
+    public function track(Exchange $exchange, bool $convert = false)
     {
         $provider = $exchange->getProvider();
 
         /** @var Collection $exchangeRates */
         $exchangeRates = ExchangeRate::where('exchange_id', $exchange->id)
             ->where('counter_iso', $provider->getUsdIso())
+            ->whereRaw('volume_24 * bid_rate > 10000')
             ->get();
 
         $best = [
@@ -96,8 +97,10 @@ class ExchangeRateController extends Controller
         //TODO remove hard coded thing here
         //$best['pair'] = ExchangeRate::where('name', 'XETHZUSD')->first();
 
-        //$order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
-        //var_dump($order);
+//        if($convert) {
+//            $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
+//            var_dump($order);
+//        }
 
         var_dump($best);
     }
