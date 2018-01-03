@@ -111,7 +111,7 @@ class LivecoinExchangeProvider implements ExchangeProviderInterface
         ];
 
         foreach ($balances as $asset) {
-            if($asset->type === 'trade' && $asset->value > $max['balance']) {
+            if($asset->type === 'available' && $asset->value > $max['balance']) {
                 $max = [
                     'asset' => $asset->currency,
                     'balance' => $asset->value,
@@ -124,6 +124,70 @@ class LivecoinExchangeProvider implements ExchangeProviderInterface
 
     public function convertHoldings(Exchange $exchange, string $wantedIso)
     {
-        throw new \Exception('Still needs to be implemented for this provider');
+        $heldAsset = $this->getHeldAsset();
+
+        if($heldAsset['asset'] === $wantedIso) { //we already hold it
+            return;
+        }
+
+        //First try a normal buy order with what we already have
+        $rate = ExchangeRate::where('exchange_id', $exchange->id)
+            ->where('base_iso', $wantedIso)
+            ->where('counter_iso', $heldAsset['asset'])
+            ->first();
+
+        if ($rate) {
+            return $this->placeOrder($rate, 'buy', $heldAsset['balance']);
+        } else { //try invert it
+            $rate = ExchangeRate::where('exchange_id', $exchange->id)
+                ->where('base_iso', $heldAsset['asset'])
+                ->where('counter_iso', $wantedIso)
+                ->first();
+
+            if($rate) {
+                return $this->placeOrder($rate, 'sell', $heldAsset['balance']);
+            }
+        }
+
+        if(!$rate) {
+            $rate = ExchangeRate::where('exchange_id', $exchange->id)
+                ->where('base_iso', $heldAsset['asset'])
+                ->where('counter_iso', $this->getUsdIso())
+                ->first();
+
+            if(!$rate) {
+                throw new \Exception('Unable to find rate for '.$heldAsset['asset'].':'.$this->getUsdIso().'');
+            }
+
+            return $this->placeOrder($rate, 'sell', $heldAsset['balance']);
+        }
+    }
+
+    public function placeOrder(ExchangeRate $rate, $type, $amount)
+    {
+        $api = new Client([
+            'base_uri' => 'https://api.livecoin.net',
+        ]);
+
+        $params = [
+            'currencyPair' => $rate->name,
+            'quantity' => $amount,
+        ];
+
+        $signature = strtoupper(hash_hmac('sha256', $params, env('LIVECOIN_API_SECRET')));
+
+        try {
+            $options = [
+                'headers' => [
+                    'Api-Key' => env('LIVECOIN_API_KEY'),
+                    'Sign' => $signature,
+                ],
+            ];
+            $order = $api->get('/exchange/'.$type.'market', $options);
+            $order = json_decode($order->getBody()->getContents());
+            return $order;
+        }catch (\Exception $e) {
+            throw $e;
+        }
     }
 }

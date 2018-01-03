@@ -87,8 +87,9 @@ class ExchangeRateController extends Controller
             $change = $this->exchangeRateRepository->trackTrend($rate);
             $min5change = $this->exchangeRateRepository->trackTrend($rate, 5);
 
-            //We want the best climber that isn't losing ground over the last 5 min
-            if ($change > $best['change'] && $min5change > 0) {
+            //magic thumb suck algorithm for spotting a climber*
+            //* citation needed
+            if ($change > $best['change'] && $min5change > 0.03) {
                 $best['pair'] = $rate;
                 $best['change'] = $change;
             }
