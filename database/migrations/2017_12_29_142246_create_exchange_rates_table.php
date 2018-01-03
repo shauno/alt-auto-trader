@@ -20,7 +20,7 @@ class CreateExchangeRatesTable extends Migration
             $table->string('name', 255);
             $table->string('base_iso', 12);
             $table->string('counter_iso', 12);
-            $table->unique(['base_iso', 'counter_iso']);
+            $table->unique(['exchange_id', 'base_iso', 'counter_iso']);
             $table->decimal('ask_rate', 32, 16);
             $table->decimal('bid_rate', 32, 16);
             $table->timestamps();
