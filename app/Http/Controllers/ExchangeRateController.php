@@ -75,7 +75,7 @@ class ExchangeRateController extends Controller
         /** @var Collection $exchangeRates */
         $exchangeRates = ExchangeRate::where('exchange_id', $exchange->id)
             ->where('counter_iso', $provider->getUsdIso())
-            ->whereRaw('volume_24 * bid_rate > 300000')
+            ->whereRaw('volume_24 * bid_rate > 100000')
             ->get();
 
         $best = [
@@ -89,7 +89,7 @@ class ExchangeRateController extends Controller
 
             //magic thumb suck algorithm for spotting a climber*
             //* citation needed
-            if ($change > $best['change'] && $min5change > 0.03) {
+            if ($change > $best['change'] && $min5change > 0.01) {
                 $best['pair'] = $rate;
                 $best['change'] = $change;
             }
