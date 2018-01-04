@@ -7,7 +7,7 @@ use App\ExchangeRate;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 
-class LivecoinExchangeProvider implements ExchangeProviderInterface
+class LivecoinExchangeProvider extends ExchangeProvider implements ExchangeProviderInterface
 {
     /**
      * @inheritdoc

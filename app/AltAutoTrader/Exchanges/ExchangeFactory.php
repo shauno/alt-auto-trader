@@ -2,12 +2,14 @@
 
 namespace AltAutoTrader\Exchanges;
 
+use App\Exchange;
+
 class ExchangeFactory
 {
-    public static function api(string $driver)
+    public static function api(Exchange $exchange)
     {
-        $className = '\\AltAutoTrader\\Exchanges\Providers\\'.ucfirst($driver).'ExchangeProvider';
+        $className = '\\AltAutoTrader\\Exchanges\Providers\\'.ucfirst($exchange->driver).'ExchangeProvider';
 
-        return new $className;
+        return new $className($exchange);
     }
 }

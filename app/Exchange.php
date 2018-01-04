@@ -20,6 +20,6 @@ class Exchange extends Model
      */
     public function getProvider()
     {
-        return ExchangeFactory::api($this->driver);
+        return ExchangeFactory::api($this);
     }
 }
