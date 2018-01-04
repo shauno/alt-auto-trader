@@ -16,6 +16,14 @@ use Illuminate\Database\Eloquent\Model;
 class Exchange extends Model
 {
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function exchangeRates()
+    {
+        return $this->hasMany(ExchangeRate::class);
+    }
+
+    /**
      * @return ExchangeProviderInterface
      */
     public function getProvider()

@@ -24,5 +24,14 @@ class ExchangeRate extends Model
         'bid_rate',
     ];
 
+    /**
+     * If true an exchange_rate_log record will be written on update of this ExchangeRate
+     * @var bool
+     */
     public $logHistory = false;
+
+    public function exchange()
+    {
+        return $this->belongsTo(Exchange::class);
+    }
 }
