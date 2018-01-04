@@ -96,68 +96,13 @@ class ExchangeRateController extends Controller
         }
 
         //TODO remove hard coded thing here
-        //$best['pair'] = ExchangeRate::where('name', 'XETHZUSD')->first();
+        $best['pair'] = ExchangeRate::where('name', 'CVC/USD')->first();
 
-//        if($convert) {
-//            $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
-//            var_dump($order);
-//        }
+        if($convert) {
+            $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
+            var_dump($order);
+        }
 
         var_dump($best);
-    }
-
-    protected function findPathToAsset(Exchange $exchange, $wantedIso, $heldIso)
-    {
-        $steps = [];
-
-        //First try a normal buy order with what we already have
-        $tradeRate = ExchangeRate::where('exchange_id', $exchange->id)
-            ->where('base_iso', $wantedIso)
-            ->where('counter_iso', $heldIso)
-            ->first();
-
-        if($tradeRate) {
-            $step[] = [
-                'rate' => $tradeRate,
-                'type' => 'buy'
-            ];
-        } else { //Is the inverse available, then we can sell
-            $tradeRate = ExchangeRate::where('exchange_id', $exchange->id)
-                ->where('base_iso', $heldIso)
-                ->where('counter_iso', $wantedIso)
-                ->first();
-
-            if($tradeRate) {
-                $step[] = [
-                    'rate' => $tradeRate,
-                    'type' => 'sell'
-                ];
-            }
-        }
-
-        //no path, we're going to need to go through USD
-        if (!$steps) {
-            $tradeRate = ExchangeRate::where('exchange_id', $exchange->id)
-                ->where('base_iso', $heldIso)
-                ->where('counter_iso', $exchange->getProvider()->getUsdIso())
-                ->first();
-
-            $steps[] = [
-                'rate' => $tradeRate,
-                'type' => 'sell'
-            ];
-
-//            $tradeRate = ExchangeRate::where('exchange_id', $exchange->id)
-//                ->where('base_iso', $wantedIso)
-//                ->where('counter_iso', $exchange->getProvider()->getUsdIso())
-//                ->first();
-//
-//            $steps[] = [
-//                'rate' => $tradeRate,
-//                'type' => 'buy'
-//            ];
-        }
-
-        return $steps;
     }
 }

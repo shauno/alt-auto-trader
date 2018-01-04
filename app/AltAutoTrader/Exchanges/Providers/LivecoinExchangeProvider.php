@@ -173,17 +173,18 @@ class LivecoinExchangeProvider implements ExchangeProviderInterface
             'currencyPair' => $rate->name,
             'quantity' => $amount,
         ];
-
-        $signature = strtoupper(hash_hmac('sha256', $params, env('LIVECOIN_API_SECRET')));
+        $signature = strtoupper(hash_hmac('sha256', http_build_query($params, '', '&'), env('LIVECOIN_API_SECRET')));
 
         try {
             $options = [
                 'headers' => [
                     'Api-Key' => env('LIVECOIN_API_KEY'),
                     'Sign' => $signature,
+                    'Content-Type' => 'application/x-www-form-urlencoded',
                 ],
+                'form_params' => $params,
             ];
-            $order = $api->get('/exchange/'.$type.'market', $options);
+            $order = $api->post('/exchange/'.$type.'market', $options);
             $order = json_decode($order->getBody()->getContents());
             return $order;
         }catch (\Exception $e) {
