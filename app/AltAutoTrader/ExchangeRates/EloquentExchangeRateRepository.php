@@ -44,4 +44,13 @@ class EloquentExchangeRateRepository implements ExchangeRateRepositoryInterface
 
         return ($list->last()->bid_rate - $list->first()->bid_rate) / $list->first()->bid_rate;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function saveExchangeRate(ExchangeRate $exchangeRate) : ExchangeRate
+    {
+        $exchangeRate->save();
+        return $exchangeRate;
+    }
 }

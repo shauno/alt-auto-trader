@@ -32,8 +32,7 @@ class ExchangeRateController extends Controller
         foreach ($rates as $rate) {
             if (!$this->exchangeRateRepository->getExchangeRateByName($exchange, $rate->name)) {
                 $rate->exchange_id = $exchange->id;
-                $rate->save();
-                $return[] = $rate;
+                $return[] = $this->exchangeRateRepository->saveExchangeRate($rate);
             }
         }
 
@@ -54,7 +53,7 @@ class ExchangeRateController extends Controller
         $exchangeRates = $api->getExchangeRatesTicker($exchangeRates);
 
         $exchangeRates->each(function ($exchangeRate) {
-            $exchangeRate->save();
+            $this->exchangeRateRepository->saveExchangeRate($exchangeRate);
 
             if($exchangeRate->logHistory) {
                 (new ExchangeRateLog([

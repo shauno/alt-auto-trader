@@ -29,4 +29,10 @@ interface ExchangeRateRepositoryInterface
      * @return float
      */
     public function trackTrend(ExchangeRate $exchangeRate, $minutesBack = 120) : float;
+
+    /**
+     * @param ExchangeRate $exchangeRate
+     * @return ExchangeRate
+     */
+    public function saveExchangeRate(ExchangeRate $exchangeRate) : ExchangeRate;
 }
