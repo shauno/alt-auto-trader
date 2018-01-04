@@ -2,20 +2,35 @@
 
 namespace AltAutoTrader\ExchangeRates;
 
+use App\Exchange;
 use App\ExchangeRate;
 use App\ExchangeRateLog;
+use Illuminate\Support\Collection;
 
-class ExchangeRateRepositoryEloquent
+class EloquentExchangeRateRepository implements ExchangeRateRepositoryInterface
 {
     /**
-     * Calculate the currency trend as percent change for this asset
-     *
-     * @param ExchangeRate $exchangeRate
-     * @param int $minutesBack
-     * @return float
+     * @inheritdoc
+     */
+    public function getExchangeRates(Exchange $exchange): Collection
+    {
+        return $exchange->exchangeRates()->get();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExchangeRateByName(Exchange $exchange, string $name) : ?ExchangeRate
+    {
+        return $exchange->exchangeRates()->where('exchange_rates.name', $name)->first();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function trackTrend(ExchangeRate $exchangeRate, $minutesBack = 120) : float
     {
+        /** @var Collection $list */
         $list = (new ExchangeRateLog())
             ->where('exchange_rate_id', $exchangeRate->id)
             ->where('created_at', '>', date('Y-m-d H:i:s', strtotime('-'.$minutesBack.' minutes')))

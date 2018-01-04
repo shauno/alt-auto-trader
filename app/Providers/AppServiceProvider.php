@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            'AltAutoTrader\ExchangeRates\ExchangeRateRepositoryInterface',
+            'AltAutoTrader\ExchangeRates\EloquentExchangeRateRepository'
+        );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use AltAutoTrader\ExchangeRates\ExchangeRateRepositoryEloquent;
+use AltAutoTrader\ExchangeRates\ExchangeRateRepositoryInterface;
 use AltAutoTrader\Lib\KrakenApi;
 use AltAutoTrader\Lib\KrakenApiException;
 use App\Exchange;
@@ -16,7 +17,7 @@ class ExchangeRateController extends Controller
 {
     protected $exchangeRateRepository;
 
-    public function __construct(ExchangeRateRepositoryEloquent $exchangeRateRepository)
+    public function __construct(ExchangeRateRepositoryInterface $exchangeRateRepository)
     {
         $this->exchangeRateRepository = $exchangeRateRepository;
     }
@@ -29,8 +30,7 @@ class ExchangeRateController extends Controller
 
         $return = [];
         foreach ($rates as $rate) {
-            $exists = ExchangeRate::where('exchange_id', $exchange->id)->where('name', $rate->name)->first();
-            if (!$exists) {
+            if (!$this->exchangeRateRepository->getExchangeRateByName($exchange, $rate->name)) {
                 $rate->exchange_id = $exchange->id;
                 $rate->save();
                 $return[] = $rate;
@@ -47,7 +47,7 @@ class ExchangeRateController extends Controller
         }
 
         /** @var Collection $exchangeRates */
-        $exchangeRates = ExchangeRate::where('exchange_id', $exchange->id)->get();
+        $exchangeRates = $this->exchangeRateRepository->getExchangeRates($exchange);
 
         $api = $exchange->getProvider();
 
