@@ -23,6 +23,18 @@ class ExchangeRateController extends Controller
         $this->exchangeRateRepository = $exchangeRateRepository;
     }
 
+    public function index(Exchange $exchange, Request $request)
+    {
+        //TODO, implement a search in the repo
+        $query = $exchange->exchangeRates();
+
+        if($request->has('counter_iso')) {
+            $query = $query->where('counter_iso', $request->get('counter_iso'));
+        }
+
+        return $query->get();
+    }
+
     public function update(Exchange $exchange, string $rate, TrackExchangeRatesService $trackExchangeRatesService)
     {
         if ($rate !== 'all') {
@@ -68,5 +80,20 @@ class ExchangeRateController extends Controller
         }
 
         var_dump($best);
+    }
+
+    public function history(Exchange $exchange, string $name)
+    {
+        if(!$exchangeRate = $this->exchangeRateRepository->getExchangeRateByName($exchange, $name)) {
+            abort(404);
+        }
+
+        $minBack = 60 * 24 * 7;
+
+        //TODO, implement this into the repo
+        return ExchangeRateLog::where('exchange_rate_id', $exchangeRate->id)
+            ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime('-'.$minBack.' minutes')))
+            ->orderBy('created_at', 'asc')
+            ->get();
     }
 }

@@ -20,7 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('v1')->group(function() {
     //Route::get('create', ['uses' => 'ExchangeController@store']);
     Route::resource('exchange.exchange-rates', 'ExchangeRateController', [
-        'only' => ['update']
+        'only' => ['index', 'update']
     ]);
     Route::get('exchange/{exchange}/exchange-rates/track/{convert?}', ['uses' => 'ExchangeRateController@track']);
+    Route::get(
+        'exchange/{exchange}/exchange-rates/history/{name}',
+        ['uses' => 'ExchangeRateController@history'])
+        ->where('name', '.*'); //Need this to allow forward slashes in the name (yes, even encoded slashes are not handled by default)
 });
