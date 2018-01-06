@@ -71,9 +71,6 @@ class ExchangeRateController extends Controller
             }
         }
 
-        //TODO remove hard coded thing here
-        $best['pair'] = ExchangeRate::where('name', 'CVC/USD')->first();
-
         if($convert) {
             $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
             var_dump($order);
