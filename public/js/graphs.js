@@ -13,7 +13,7 @@ jQuery(document).ready(function() {
 function drawLog(exchange, name) {
     jQuery.ajax({
         method: 'get',
-        url: '/api/v1/exchange/'+exchange+'/exchange-rates/history/'+name+'?min-back=240',
+        url: '/api/v1/exchange/'+exchange+'/exchange-rates/history/'+name+'?min-back=480',
         success: function(data) {
             var graphdata = [];
             for(i in data) {
@@ -33,7 +33,8 @@ function drawLog(exchange, name) {
             jQuery("#log-"+name).plot(
                 graphdata,
                 {
-                    xaxis: { mode: "time"}
+                    xaxis: { mode: "time"},
+                    legend: {position: 'nw'}
                 }
             ).data("plot");
 
