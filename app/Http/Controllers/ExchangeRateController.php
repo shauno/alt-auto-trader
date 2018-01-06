@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use AltAutoTrader\ExchangeRates\ExchangeRateRepositoryEloquent;
 use AltAutoTrader\ExchangeRates\ExchangeRateRepositoryInterface;
+use AltAutoTrader\ExchangeRates\TrackExchangeRatesService;
 use AltAutoTrader\Lib\KrakenApi;
 use AltAutoTrader\Lib\KrakenApiException;
 use App\Exchange;
@@ -22,49 +23,13 @@ class ExchangeRateController extends Controller
         $this->exchangeRateRepository = $exchangeRateRepository;
     }
 
-    public function store(Exchange $exchange)
-    {
-        $api = $exchange->getProvider();
-
-        $rates = $api->getExchangeRatesFromExchange();
-
-        $return = [];
-        foreach ($rates as $rate) {
-            if (!$this->exchangeRateRepository->getExchangeRateByName($exchange, $rate->name)) {
-                $rate->exchange_id = $exchange->id;
-                $return[] = $this->exchangeRateRepository->saveExchangeRate($rate);
-            }
-        }
-
-        return $return;
-    }
-
-    public function update(Exchange $exchange, string $rate)
+    public function update(Exchange $exchange, string $rate, TrackExchangeRatesService $trackExchangeRatesService)
     {
         if ($rate !== 'all') {
             return response('Only updating "all" is currently supported', 501);
         }
 
-        /** @var Collection $exchangeRates */
-        $exchangeRates = $this->exchangeRateRepository->getExchangeRates($exchange);
-
-        $api = $exchange->getProvider();
-
-        $exchangeRates = $api->getExchangeRatesTicker($exchangeRates);
-
-        $exchangeRates->each(function ($exchangeRate) {
-            $this->exchangeRateRepository->saveExchangeRate($exchangeRate);
-
-            if($exchangeRate->logHistory) {
-                (new ExchangeRateLog([
-                    'exchange_rate_id' => $exchangeRate->id,
-                    'ask_rate' => $exchangeRate->ask_rate,
-                    'bid_rate' => $exchangeRate->bid_rate,
-                ]))->save();
-            }
-        });
-
-        return $exchangeRates;
+        return $trackExchangeRatesService->trackExchangeRates($exchange);
     }
 
     public function track(Exchange $exchange, bool $convert = false)

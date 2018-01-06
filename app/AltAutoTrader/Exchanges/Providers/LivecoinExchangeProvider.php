@@ -20,7 +20,7 @@ class LivecoinExchangeProvider extends ExchangeProvider implements ExchangeProvi
     /**
      * @inheritdoc
      */
-    public function getExchangeRatesFromExchange() : Collection
+    public function getExchangeRatesTicker() : Collection
     {
         $api = new Client([
             'base_uri' => 'https://api.livecoin.net',
@@ -28,62 +28,36 @@ class LivecoinExchangeProvider extends ExchangeProvider implements ExchangeProvi
 
         try {
             $assets = $api->get('/exchange/ticker');
-            $assets = json_decode($assets->getBody()->getContents());
+            $newRates = json_decode($assets->getBody()->getContents());
         }catch (\Exception $e) {
             return response('API call failed', 500);
         }
 
-        $return = [];
-        foreach ($assets as $details) {
-            list($baseIso, $counterIso) = explode('/', $details->symbol);
-            $exchangeRate = new ExchangeRate();
-            $exchangeRate->fill([
-                'name' => $details->symbol,
+        $exchangeRates = [];
+        foreach ($newRates as $exchangeRate) {
+            list($baseIso, $counterIso) = explode('/', $exchangeRate->symbol);
+            $model = new ExchangeRate([
+                'exchange_id' => $this->exchange->id,
+                'name' => $exchangeRate->symbol,
                 'base_iso' => $baseIso,
                 'counter_iso' => $counterIso,
-                'ask_rate' => $details->best_ask,
-                'bid_rate' => $details->best_bid,
+                'ask_rate' => $exchangeRate->best_ask,
+                'bid_rate' => $exchangeRate->best_bid,
+                'volume_24' => $exchangeRate->volume,
             ]);
+            if ($model->counter_iso === $this->getUsdIso()) {
+                $model->logHistory = true;
+            }
 
-            $return[] = $exchangeRate;
+            $exchangeRates[] = $model;
         }
 
-        return new Collection($return);
+        return new Collection($exchangeRates);
     }
 
     /**
      * @inheritdoc
      */
-    public function getExchangeRatesTicker(Collection $exchangeRates) : Collection
-    {
-        $api = new Client([
-            'base_uri' => 'https://api.livecoin.net',
-        ]);
-
-        try {
-            $assets = $api->get('/exchange/ticker');
-            $rates = json_decode($assets->getBody()->getContents());
-        }catch (\Exception $e) {
-            return response('API call failed', 500);
-        }
-
-        $keyedRates = [];
-        foreach ($rates as $rate) {
-            $keyedRates[$rate->symbol] = $rate;
-        }
-
-        foreach ($exchangeRates as $exchangeRate) {
-            $exchangeRate->ask_rate = $keyedRates[$exchangeRate->name]->best_ask;
-            $exchangeRate->bid_rate = $keyedRates[$exchangeRate->name]->best_bid;
-            $exchangeRate->volume_24 = $keyedRates[$exchangeRate->name]->volume;
-            if ($exchangeRate->counter_iso === $this->getUsdIso()) {
-                $exchangeRate->logHistory = true;
-            }
-        }
-
-        return $exchangeRates;
-    }
-
     public function getHeldAsset() : array
     {
         $api = new Client([
@@ -122,6 +96,9 @@ class LivecoinExchangeProvider extends ExchangeProvider implements ExchangeProvi
         return $max;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function convertHoldings(Exchange $exchange, string $wantedIso)
     {
         $heldAsset = $this->getHeldAsset();
@@ -163,7 +140,14 @@ class LivecoinExchangeProvider extends ExchangeProvider implements ExchangeProvi
         }
     }
 
-    public function placeOrder(ExchangeRate $rate, $type, $amount)
+    /**
+     * @param ExchangeRate $rate
+     * @param string $type "buy" or "sell"
+     * @param float $amount
+     * @return array|\stdClass
+     * @throws \Exception
+     */
+    public function placeOrder(ExchangeRate $rate, $type, float $amount)
     {
         $api = new Client([
             'base_uri' => 'https://api.livecoin.net',

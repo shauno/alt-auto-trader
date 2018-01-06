@@ -18,15 +18,17 @@ interface ExchangeProviderInterface
     /**
      * @return Collection|ExchangeRate[]
      */
-    public function getExchangeRatesFromExchange() : Collection;
+    public function getExchangeRatesTicker() : Collection;
 
     /**
-     * @param Collection|ExchangeRate[] $exchangeRates
-     * @return Collection|ExchangeRate[]
+     * @return array
      */
-    public function getExchangeRatesTicker(Collection $exchangeRates) : Collection;
-
     public function getHeldAsset() : array;
 
+    /**
+     * @param Exchange $exchange
+     * @param string $wantedIso
+     * @return mixed
+     */
     public function convertHoldings(Exchange $exchange, string $wantedIso);
 }

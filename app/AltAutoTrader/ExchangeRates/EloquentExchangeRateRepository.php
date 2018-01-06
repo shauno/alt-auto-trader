@@ -51,6 +51,24 @@ class EloquentExchangeRateRepository implements ExchangeRateRepositoryInterface
     public function saveExchangeRate(ExchangeRate $exchangeRate) : ExchangeRate
     {
         $exchangeRate->save();
+
+        if ($exchangeRate->logHistory) {
+            $this->saveExchangeRateHistory($exchangeRate);
+        }
+
         return $exchangeRate;
+    }
+
+    private function saveExchangeRateHistory(ExchangeRate $exchangeRate)
+    {
+        $exchangeRateLog = (new ExchangeRateLog([
+            'exchange_rate_id' => $exchangeRate->id,
+            'ask_rate' => $exchangeRate->ask_rate,
+            'bid_rate' => $exchangeRate->bid_rate,
+        ]));
+
+        $exchangeRateLog->save();
+
+        return $exchangeRateLog;
     }
 }
