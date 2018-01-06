@@ -17,7 +17,16 @@ function drawLog(exchange, name) {
         success: function(data) {
             var graphdata = [];
             for(i in data) {
-                graphdata.push([new Date(data[i].created_at), parseFloat(data[i].bid_rate)]);
+                givenDate = new Date(data[i].created_at);
+                correctedDate = new Date(Date.UTC(
+                    givenDate.getFullYear(),
+                    givenDate.getMonth(),
+                    givenDate.getDay(),
+                    givenDate.getHours(),
+                    givenDate.getMinutes() - givenDate.getTimezoneOffset(),
+                    givenDate.getSeconds()
+                ));
+                graphdata.push([correctedDate, parseFloat(data[i].bid_rate)]);
             }
 
             graphdata = [
