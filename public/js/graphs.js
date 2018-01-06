@@ -29,7 +29,7 @@ function drawLog(exchange, name) {
 
             name = name.replace('/', '-').toLowerCase();
 
-            jQuery('#graph-container').append('<div id="log-'+name+'" style="width: 600px; height: 200px;"></div>');
+            jQuery('#graph-container').append('<div id="log-'+name+'" style="width: 600px; height: 100px; display: inline-block;"></div>');
             jQuery("#log-"+name).plot(
                 graphdata,
                 {
