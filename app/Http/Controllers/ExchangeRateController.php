@@ -82,13 +82,15 @@ class ExchangeRateController extends Controller
         var_dump($best);
     }
 
-    public function history(Exchange $exchange, string $name)
+    public function history(Exchange $exchange, string $name, Request $request)
     {
         if(!$exchangeRate = $this->exchangeRateRepository->getExchangeRateByName($exchange, $name)) {
             abort(404);
         }
 
-        $minBack = 60 * 24 * 7;
+        if (!$minBack = $request->get('min-back')) {
+            $minBack = 60 * 24 * 7;
+        }
 
         //TODO, implement this into the repo
         return ExchangeRateLog::where('exchange_rate_id', $exchangeRate->id)
