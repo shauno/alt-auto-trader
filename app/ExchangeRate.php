@@ -22,6 +22,7 @@ class ExchangeRate extends Model
         'counter_iso',
         'ask_rate',
         'bid_rate',
+        'volume_24',
     ];
 
     /**

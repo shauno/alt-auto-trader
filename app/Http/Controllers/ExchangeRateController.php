@@ -32,6 +32,10 @@ class ExchangeRateController extends Controller
             $query = $query->where('counter_iso', $request->get('counter_iso'));
         }
 
+        if($request->has('volume')) {
+            $query = $query->whereRaw('volume_24 * bid_rate > ?', $request->get('volume'));
+        }
+
         return $query->get();
     }
 
