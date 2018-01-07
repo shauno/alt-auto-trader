@@ -21,7 +21,7 @@ function drawLog(exchange, name) {
                 correctedDate = new Date(Date.UTC(
                     givenDate.getFullYear(),
                     givenDate.getMonth(),
-                    givenDate.getDay(),
+                    givenDate.getDate(),
                     givenDate.getHours(),
                     givenDate.getMinutes() - givenDate.getTimezoneOffset(),
                     givenDate.getSeconds()
