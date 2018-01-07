@@ -57,9 +57,9 @@ function drawLog(exchange, name) {
                 for(var i = 0; i < allData.length; i++) {
                     if(allData[i][0].getTime() >= ranges.xaxis.from && allData[i][0].getTime() <= ranges.xaxis.to) {
                         if(!normalize) {
-                            normalize = 1 / allData[i][1];
+                            normalize = (1 / allData[i][1]) * 100000;
                         }
-                        selectedData.push([selectedData.length, allData[i][1]*normalize]);
+                        selectedData.push([selectedData.length * 100000, allData[i][1]*normalize]);
                     }
                 }
 
