@@ -10,6 +10,8 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery.flot.min.js"></script>
     <script src="/js/jquery.flot.time.min.js"></script>
+    <script src="/js/jquery.flot.selection.min.js"></script>
+    <script src="/js/regression.min.js"></script>
     <script src="/js/graphs.js"></script>
 </head>
 <body>
