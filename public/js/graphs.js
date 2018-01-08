@@ -57,15 +57,15 @@ function drawLog(exchange, name) {
                 for(var i = 0; i < allData.length; i++) {
                     if(allData[i][0].getTime() >= ranges.xaxis.from && allData[i][0].getTime() <= ranges.xaxis.to) {
                         if(!normalize) {
-                            normalize = (1 / allData[i][1]) * 100000;
+                            normalize = (1 / allData[i][1]);
                         }
-                        selectedData.push([selectedData.length * 100000, allData[i][1]*normalize]);
+                        selectedData.push([selectedData.length, allData[i][1]*normalize]);
                     }
                 }
 
-                var grad = regression.linear(selectedData);
+                var grad = regression.linear(selectedData, {precision: 8});
                 console.log(selectedData);
-                console.log(grad.equation[0]);
+                console.log(grad.equation[0].toFixed(8));
             });
 
 
