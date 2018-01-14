@@ -39,6 +39,11 @@ class ExchangeRateController extends Controller
         return $query->get();
     }
 
+    public function store(Exchange $exchange, TrackExchangeRatesService $trackExchangeRatesService)
+    {
+        return $trackExchangeRatesService->fetchExchangeRates($exchange);
+    }
+
     public function update(Exchange $exchange, string $rate, TrackExchangeRatesService $trackExchangeRatesService)
     {
         if ($rate !== 'all') {

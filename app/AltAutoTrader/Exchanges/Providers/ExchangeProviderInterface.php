@@ -18,7 +18,13 @@ interface ExchangeProviderInterface
     /**
      * @return Collection|ExchangeRate[]
      */
-    public function getExchangeRatesTicker() : Collection;
+    public function getExchangeRates() : Collection;
+
+    /**
+     * @param Collection|ExchangeRate[] $exchangeRates
+     * @return Collection|ExchangeRate[]
+     */
+    public function getExchangeRatesTicker(Collection $exchangeRates) : Collection;
 
     /**
      * @return array

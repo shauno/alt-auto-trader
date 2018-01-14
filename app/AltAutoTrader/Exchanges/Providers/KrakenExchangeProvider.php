@@ -8,7 +8,7 @@ use App\Exchange;
 use App\ExchangeRate;
 use Illuminate\Support\Collection;
 
-class KrakenExchangeProvider implements ExchangeProviderInterface
+class KrakenExchangeProvider extends ExchangeProvider implements ExchangeProviderInterface
 {
     /**
      * @inheritdoc
@@ -21,7 +21,7 @@ class KrakenExchangeProvider implements ExchangeProviderInterface
     /**
      * @inheritdoc
      */
-    public function getExchangeRatesFromExchange() : Collection
+    public function getExchangeRates() : Collection
     {
         $api = new KrakenApi(env('KRAKEN_API_KEY'), env('KRAKEN_API_SECRET'));
 
@@ -37,11 +37,13 @@ class KrakenExchangeProvider implements ExchangeProviderInterface
                 if (substr($asset, -2) != '.d') { //no idea what these pairs are, but they seem like duplicates
                     $exchangeRate = new ExchangeRate();
                     $exchangeRate->fill([
+                        'exchange_id' => $this->exchange->id,
                         'name' => $asset,
                         'base_iso' => $details['base'],
                         'counter_iso' => $details['quote'],
                         'ask_rate' => 0,
                         'bid_rate' => 0,
+                        'volume' => 0,
                     ]);
 
                     $return[] = $exchangeRate;
@@ -73,6 +75,7 @@ class KrakenExchangeProvider implements ExchangeProviderInterface
             foreach ($exchangeRates as $exchangeRate) {
                 $exchangeRate->ask_rate = $rates['result'][$exchangeRate->name]['a'][0];
                 $exchangeRate->bid_rate = $rates['result'][$exchangeRate->name]['b'][0];
+                $exchangeRate->volume_24 = $rates['result'][$exchangeRate->name]['v'][1];
                 if ($exchangeRate->counter_iso === 'ZUSD') {
                     $exchangeRate->logHistory = true;
                 }

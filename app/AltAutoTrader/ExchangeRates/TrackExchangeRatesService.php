@@ -20,6 +20,33 @@ class TrackExchangeRatesService
     }
 
     /**
+     * Fetches the list of possible exchange rates from the exchange provider
+     *
+     * @param Exchange $exchange
+     * @return ExchangeRate[]|Collection
+     */
+    public function fetchExchangeRates(Exchange $exchange)
+    {
+        $provider = $exchange->getProvider();
+
+        $exchangeRates = $provider->getExchangeRates();
+
+        $exchangeRates = $exchangeRates->map(function (ExchangeRate $exchangeRate) use($exchange, $provider) {
+            //If the exchange rate exists, update it instead of creating it
+            if($exists = $this->exchangeRateRepository->getExchangeRateByName($exchange, $exchangeRate->name)) {
+                $exists->fill($exchangeRate->toArray());
+                $exchangeRate = $exists;
+            }
+
+            $this->exchangeRateRepository->saveExchangeRate($exchangeRate);
+
+            return $exchangeRate;
+        });
+
+        return $exchangeRates;
+    }
+
+    /**
      * @param Exchange $exchange
      * @return ExchangeRate[]|Collection
      */
@@ -27,20 +54,12 @@ class TrackExchangeRatesService
     {
         $provider = $exchange->getProvider();
 
-        $exchangeRates = $provider->getExchangeRatesTicker();
+        $exchangeRates = $this->exchangeRateRepository->getExchangeRates($exchange);
 
-        $exchangeRates = $exchangeRates->map(function (ExchangeRate $exchangeRate) use($exchange, $provider) {
-            //If the exchange rate exists, update it instead of creating it
-            if($exists = $this->exchangeRateRepository->getExchangeRateByName($exchange, $exchangeRate->name)) {
-                $logHistory = $exchangeRate->logHistory;
-                $exists->fill($exchangeRate->toArray());
-                $exchangeRate = $exists;
-                $exchangeRate->logHistory = $logHistory;
-            }
+        $exchangeRates = $provider->getExchangeRatesTicker($exchangeRates);
 
+        $exchangeRates = $exchangeRates->each(function (ExchangeRate $exchangeRate) {
             $this->exchangeRateRepository->saveExchangeRate($exchangeRate);
-
-            return $exchangeRate;
         });
 
         return $exchangeRates;
