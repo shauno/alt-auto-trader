@@ -34,7 +34,7 @@ class KrakenExchangeProvider extends ExchangeProvider implements ExchangeProvide
         $return = [];
         if (!$assets['error']) {
             foreach ($assets['result'] as $asset => $details) {
-                if (substr($asset, -2) != '.d') { //no idea what these pairs are, but they seem like duplicates
+                if (substr($asset, -2) != '.d' && $asset != 'USDTZUSD') { //no idea what these pairs are, but they seem like duplicates
                     $exchangeRate = new ExchangeRate();
                     $exchangeRate->fill([
                         'exchange_id' => $this->exchange->id,
