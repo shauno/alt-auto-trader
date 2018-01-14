@@ -1,7 +1,7 @@
 jQuery(document).ready(function() {
     jQuery.ajax({
         method: 'get',
-        url: '/api/v1/exchange/livecoin/exchange-rates?counter_iso=USD&volume=100000',
+        url: '/api/v1/exchange/livecoin/exchange-rates?counter_iso=USD&volume=0',
         success: function(data) {
             for(i in data) {
                 drawLog('livecoin', data[i].name);
