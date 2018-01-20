@@ -76,9 +76,7 @@ class KrakenExchangeProvider extends ExchangeProvider implements ExchangeProvide
                 $exchangeRate->ask_rate = $rates['result'][$exchangeRate->name]['a'][0];
                 $exchangeRate->bid_rate = $rates['result'][$exchangeRate->name]['b'][0];
                 $exchangeRate->volume_24 = $rates['result'][$exchangeRate->name]['v'][1];
-                if ($exchangeRate->counter_iso === 'ZUSD') {
-                    $exchangeRate->logHistory = true;
-                }
+                $exchangeRate->logHistory = true;
             }
         }
 

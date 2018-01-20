@@ -100,9 +100,13 @@ class ExchangeRateController extends Controller
         }
 
         //TODO, implement this into the repo
-        return ExchangeRateLog::where('exchange_rate_id', $exchangeRate->id)
+        $data = ExchangeRateLog::where('exchange_rate_id', $exchangeRate->id)
             ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime('-'.$minBack.' minutes')))
             ->orderBy('created_at', 'asc')
             ->get();
+
+        return [
+            'data' => $data,
+        ];
     }
 }
