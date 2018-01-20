@@ -16,6 +16,35 @@
 </head>
 <body>
 
+<input type="hidden" id="selectedExchange" value="{{$selectedExchange->slug}}" />
+<input type="hidden" id="selectedCounterIso" value="{{$selectedCounterIso}}" />
+
+<form method="get">
+    <label>Exchange</label>
+    <select name="exchange">
+        <option>Select</option>
+        @foreach($exchanges as $exchange)
+            <option value="{{$exchange->slug}}" @if($exchange->slug == $selectedExchange->slug) selected="selected" @endif>{{$exchange->name}}</option>
+        @endforeach
+    </select>
+    <br />
+
+    @if($counterIsos)
+        <label>Counter ISO</label>
+
+        <select name="counter_iso">
+            <option>Select</option>
+            @foreach($counterIsos as $iso)
+                <option value="{{$iso->counter_iso}}" @if($selectedCounterIso == $iso->counter_iso) selected="selected" @endif>{{$iso->counter_iso}}</option>
+            @endforeach
+        </select>
+        <br />
+    @endif
+
+    <input type="submit" value="Change" />
+</form>
+<hr />
+
 <div id="graph-container"></div>
 
 

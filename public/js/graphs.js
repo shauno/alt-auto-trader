@@ -1,10 +1,17 @@
 jQuery(document).ready(function() {
+    var exchange = jQuery('#selectedExchange').val();
+    var counterIso = jQuery('#selectedCounterIso').val();
+
+    if(!exchange || !counterIso) {
+        return;
+    }
+
     jQuery.ajax({
         method: 'get',
-        url: '/api/v1/exchange/kraken/exchange-rates?counter_iso=ZUSD&volume=0',
+        url: '/api/v1/exchange/'+exchange+'/exchange-rates?counter_iso='+counterIso+'&volume=0',
         success: function(data) {
             for(i in data) {
-                drawLog('kraken', data[i].name);
+                drawLog(exchange, data[i].name);
             }
         }
     });

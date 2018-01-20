@@ -11,8 +11,4 @@
 |
 */
 
-use AltAutoTrader\Lib\KrakenApi;
-
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/{exchange?}', [ 'as' => 'home', 'uses' => 'PageController@index']);
