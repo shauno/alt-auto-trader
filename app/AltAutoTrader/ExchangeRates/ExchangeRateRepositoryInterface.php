@@ -25,10 +25,11 @@ interface ExchangeRateRepositoryInterface
      * Calculate the currency trend as percent change for this asset
      *
      * @param ExchangeRate $exchangeRate
-     * @param int $minutesBack
+     * @param int $start timestamp to start from
+     * @param int $end timestamp to end at
      * @return float
      */
-    public function trackTrend(ExchangeRate $exchangeRate, $minutesBack = 120) : float;
+    public function trackTrend(ExchangeRate $exchangeRate, int $start, int $end) : float;
 
     /**
      * @param ExchangeRate $exchangeRate

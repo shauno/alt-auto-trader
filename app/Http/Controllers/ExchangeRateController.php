@@ -100,13 +100,25 @@ class ExchangeRateController extends Controller
         }
 
         //TODO, implement this into the repo
+        /** @var Collection $data */
         $data = ExchangeRateLog::where('exchange_rate_id', $exchangeRate->id)
             ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime('-'.$minBack.' minutes')))
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return [
-            'data' => $data,
-        ];
+        $data = $data->map(function(ExchangeRateLog $rate) {
+            return [
+                'rate' => $rate,
+                'extra' => [
+                    '3_2_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(180*60*60), time()-(120*60*60)),
+                    '2_1_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(120*60*60), time()-(60*60*60)),
+                    '1_0_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(60*60*60), time()),
+                    '3_0_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(180*60*60), time()),
+                    '5_0_min' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(5*60), time()),
+                ],
+            ];
+        });
+
+        return $data;
     }
 }

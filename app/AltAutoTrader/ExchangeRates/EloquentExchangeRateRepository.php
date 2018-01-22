@@ -28,12 +28,13 @@ class EloquentExchangeRateRepository implements ExchangeRateRepositoryInterface
     /**
      * @inheritdoc
      */
-    public function trackTrend(ExchangeRate $exchangeRate, $minutesBack = 120) : float
+    public function trackTrend(ExchangeRate $exchangeRate, int $start, int $end) : float
     {
         /** @var Collection $list */
         $list = (new ExchangeRateLog())
             ->where('exchange_rate_id', $exchangeRate->id)
-            ->where('created_at', '>', date('Y-m-d H:i:s', strtotime('-'.$minutesBack.' minutes')))
+            ->where('created_at', '>=', date('Y-m-d H:i:s', $start))
+            ->where('created_at', '<=', date('Y-m-d H:i:s', $end))
             ->orderBy('created_at', 'asc')
             ->get();
 

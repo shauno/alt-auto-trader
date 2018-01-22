@@ -22,11 +22,11 @@ function drawLog(exchange, name) {
     jQuery.ajax({
         method: 'get',
         url: '/api/v1/exchange/'+exchange+'/exchange-rates/history/'+name+'?min-back=480',
-        success: function(returnedData) {
-            var data = returnedData.data;
+        success: function(data) {
             var graphdata = [];
+            var trendData = [];
             for(i in data) {
-                givenDate = new Date(data[i].created_at);
+                givenDate = new Date(data[i].rate.created_at);
                 correctedDate = new Date(Date.UTC(
                     givenDate.getFullYear(),
                     givenDate.getMonth(),
@@ -35,7 +35,8 @@ function drawLog(exchange, name) {
                     givenDate.getMinutes() - givenDate.getTimezoneOffset(),
                     givenDate.getSeconds()
                 ));
-                graphdata.push([correctedDate, parseFloat(data[i].bid_rate)]);
+                graphdata.push([correctedDate, parseFloat(data[i].rate.bid_rate)]);
+                trendData = data[i].extra;
             }
 
             graphdata = [
@@ -47,9 +48,14 @@ function drawLog(exchange, name) {
 
             name = name.replace('/', '-').toLowerCase();
 
-            jQuery('#graph-container').append('<div id="log-'+name+'" style="width: 600px; height: 100px; display: inline-block;"></div>');
+            var html = '' +
+                '<div id="log-'+name+'" style="display: inline-block;">' +
+                '   <div class="graph" style="width: 600px; height: 100px; display: block;"></div>' +
+                '   <div class="data"><pre>'+JSON.stringify(trendData, null, 2)+'</pre></div>' +
+                '</div>';
+            jQuery('#graph-container').append(html);
 
-            graphs[name] = jQuery("#log-"+name).plot(
+            graphs[name] = jQuery("#log-"+name+" .graph").plot(
                 graphdata,
                 {
                     xaxis: { mode: "time"},
@@ -67,7 +73,7 @@ function drawLog(exchange, name) {
                         if(!normalize) {
                             normalize = (1 / allData[i][1]);
                         }
-                        selectedData.push([selectedData.length, allData[i][1]*normalize]);
+                            selectedData.push([selectedData.length, allData[i][1]*normalize]);
                     }
                 }
 
