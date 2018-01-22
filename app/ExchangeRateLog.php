@@ -11,4 +11,10 @@ class ExchangeRateLog extends Model
         'ask_rate',
         'bid_rate',
     ];
+
+    public function exchangeRate()
+    {
+        return $this->belongsTo(ExchangeRate::class);
+    }
+
 }
