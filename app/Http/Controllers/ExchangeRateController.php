@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use AltAutoTrader\ExchangeRates\ExchangeRateRepositoryEloquent;
 use AltAutoTrader\ExchangeRates\ExchangeRateRepositoryInterface;
 use AltAutoTrader\ExchangeRates\TrackExchangeRatesService;
-use AltAutoTrader\Lib\KrakenApi;
-use AltAutoTrader\Lib\KrakenApiException;
 use App\Exchange;
 use App\ExchangeRate;
 use App\ExchangeRateLog;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use MathPHP\Statistics\Regression\Linear;
 
 class ExchangeRateController extends Controller
 {
@@ -70,15 +68,33 @@ class ExchangeRateController extends Controller
         ];
 
         foreach($exchangeRates as $rate) {
-            $change = $this->exchangeRateRepository->trackTrend($rate, 240);
-            $min5change = $this->exchangeRateRepository->trackTrend($rate, 5);
+
+            $change = [
+                '3_2_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(3*60*60), time()-(2*60*60)),
+                '2_1_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(2*60*60), time()-(1*60*60)),
+                '1_0_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(1*60*60), time()),
+                '3_0_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(3*60*60), time()),
+                '5_0_min' => $this->exchangeRateRepository->trackTrend($rate, time()-(5*60), time()),
+            ];
 
             //magic thumb suck algorithm for spotting a climber*
             //* citation needed
-            if ($change > $best['change'] && $min5change > 0.01) {
-                $best['pair'] = $rate;
-                $best['change'] = $change;
+            if(
+                $change['3_2_hours'] > 0
+                && $change['2_1_hours'] > 0
+                && $change['1_0_hours'] > 0
+                && $change['3_0_hours'] > 0
+                && $change['5_0_min'] > 0
+            ) {
+                if($change['3_0_hours'] > $best['change']) {
+                    $best['pair'] = $rate;
+                    $best['change'] = $change[3];
+                }
             }
+
+            var_dump($rate->name);
+            var_dump($change);
+            echo '<hr />';
         }
 
         if($convert) {
@@ -110,10 +126,10 @@ class ExchangeRateController extends Controller
             return [
                 'rate' => $rate,
                 'extra' => [
-                    '3_2_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(180*60*60), time()-(120*60*60)),
-                    '2_1_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(120*60*60), time()-(60*60*60)),
-                    '1_0_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(60*60*60), time()),
-                    '3_0_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(180*60*60), time()),
+                    '3_2_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(3*60*60), time()-(2*60*60)),
+                    '2_1_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(2*60*60), time()-(1*60*60)),
+                    '1_0_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(1*60*60), time()),
+                    '3_0_hours' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(3*60*60), time()),
                     '5_0_min' => $this->exchangeRateRepository->trackTrend($rate->exchangeRate, time()-(5*60), time()),
                 ],
             ];
