@@ -25,8 +25,8 @@ function drawLog(exchange, name) {
         success: function(data) {
             var graphdata = [];
             var trendData = [];
-            for(i in data) {
-                givenDate = new Date(data[i].rate.created_at);
+            for(i in data.rates) {
+                givenDate = new Date(data.rates[i].created_at);
                 correctedDate = new Date(Date.UTC(
                     givenDate.getFullYear(),
                     givenDate.getMonth(),
@@ -35,9 +35,11 @@ function drawLog(exchange, name) {
                     givenDate.getMinutes() - givenDate.getTimezoneOffset(),
                     givenDate.getSeconds()
                 ));
-                graphdata.push([correctedDate, parseFloat(data[i].rate.bid_rate)]);
-                trendData = data[i].extra;
+                graphdata.push([correctedDate, parseFloat(data.rates[i].bid_rate)]);
             }
+            trendData = data.extra;
+
+            console.log(trendData);
 
             graphdata = [
                 {

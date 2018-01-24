@@ -30,20 +30,29 @@ class EloquentExchangeRateRepository implements ExchangeRateRepositoryInterface
      */
     public function trackTrend(ExchangeRate $exchangeRate, int $start, int $end) : float
     {
-        /** @var Collection $list */
-        $list = (new ExchangeRateLog())
+        $first = (new ExchangeRateLog())
+            ->select('bid_rate')
             ->where('exchange_rate_id', $exchangeRate->id)
             ->where('created_at', '>=', date('Y-m-d H:i:s', $start))
             ->where('created_at', '<=', date('Y-m-d H:i:s', $end))
             ->orderBy('created_at', 'asc')
-            ->get();
+            ->limit(1)
+            ->first();
 
-        //Should be false (null)?
-        if (!$list->count()) {
+        $last = (new ExchangeRateLog())
+            ->select('bid_rate')
+            ->where('exchange_rate_id', $exchangeRate->id)
+            ->where('created_at', '>=', date('Y-m-d H:i:s', $start))
+            ->where('created_at', '<=', date('Y-m-d H:i:s', $end))
+            ->orderBy('created_at', 'desc')
+            ->limit(1)
+            ->first();
+
+        if(!$first || !$last) {
             return 0;
         }
 
-        return ($list->last()->bid_rate - $list->first()->bid_rate) / $list->first()->bid_rate;
+        return ($last->bid_rate - $first->bid_rate) / $first->bid_rate;
     }
 
     /**
