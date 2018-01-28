@@ -32,6 +32,14 @@ interface ExchangeRateRepositoryInterface
     public function trackTrend(ExchangeRate $exchangeRate, int $start, int $end) : float;
 
     /**
+     * Calculatethe trend over a few predetermined periods
+     *
+     * @param ExchangeRate $exchangeRate
+     * @return array
+     */
+    public function trendData(ExchangeRate $exchangeRate);
+
+    /**
      * @param ExchangeRate $exchangeRate
      * @return ExchangeRate
      */

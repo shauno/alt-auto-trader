@@ -124,14 +124,7 @@ class ExchangeRateController extends Controller
 
         return [
             'rates' => $data,
-            'extra' => [
-                '3_2_hours' => $this->exchangeRateRepository->trackTrend($exchangeRate, time()-(3*60*60), time()-(2*60*60)),
-                '2_1_hours' => $this->exchangeRateRepository->trackTrend($exchangeRate, time()-(2*60*60), time()-(1*60*60)),
-                '1_0_hours' => $this->exchangeRateRepository->trackTrend($exchangeRate, time()-(1*60*60), time()),
-                '3_0_hours' => $this->exchangeRateRepository->trackTrend($exchangeRate, time()-(3*60*60), time()),
-                '5_0_min' => $this->exchangeRateRepository->trackTrend($exchangeRate, time()-(5*60), time()),
-            ],
-
+            'extra' => $this->exchangeRateRepository->trendData($exchangeRate),
         ];
     }
 }
