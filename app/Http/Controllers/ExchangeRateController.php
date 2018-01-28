@@ -68,26 +68,21 @@ class ExchangeRateController extends Controller
         ];
 
         foreach($exchangeRates as $rate) {
-            $change = [
-                '3_2_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(3*60*60), time()-(2*60*60)),
-                '2_1_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(2*60*60), time()-(1*60*60)),
-                '1_0_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(1*60*60), time()),
-                '3_0_hours' => $this->exchangeRateRepository->trackTrend($rate, time()-(3*60*60), time()),
-                '5_0_min' => $this->exchangeRateRepository->trackTrend($rate, time()-(5*60), time()),
-            ];
+            $change = $this->exchangeRateRepository->trendData($rate);
 
-            //magic thumb suck algorithm for spotting a climber*
-            //* citation needed
-            if(
-                $change['3_2_hours'] > 0
-                && $change['2_1_hours'] > 0
-                && $change['1_0_hours'] > 0
-                && $change['3_0_hours'] > 0
-                && $change['5_0_min'] > 0
-            ) {
-                if($change['3_0_hours'] > $best['change']) {
+            $positive = true;
+
+            foreach($change as $period) {
+                if($period <= 0) {
+                    $positive = false;
+                    break;
+                }
+            }
+
+            if($positive) {
+                if(array_values($change)[0] > $best['change']) {
                     $best['pair'] = $rate;
-                    $best['change'] = $change[3];
+                    $best['change'] = array_values($change)[0];
                 }
             }
 
