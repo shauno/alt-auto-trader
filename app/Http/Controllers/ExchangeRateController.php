@@ -67,12 +67,13 @@ class ExchangeRateController extends Controller
             'change' => 0,
         ];
 
+        $change = [];
         foreach($exchangeRates as $rate) {
-            $change = $this->exchangeRateRepository->trendData($rate);
+            $change[$rate->name] = $this->exchangeRateRepository->trendData($rate);
 
             $positive = true;
 
-            foreach($change as $period) {
+            foreach($change[$rate->name] as $period) {
                 if($period <= 0) {
                     $positive = false;
                     break;
@@ -80,22 +81,21 @@ class ExchangeRateController extends Controller
             }
 
             if($positive) {
-                if(array_values($change)[0] > $best['change']) {
+                if(array_values($change[$rate->name])[0] > $best['change']) {
                     $best['pair'] = $rate;
-                    $best['change'] = array_values($change)[0];
+                    $best['change'] = array_values($change[$rate->name])[0];
                 }
             }
 
-            var_dump($rate->name);
-            var_dump($change);
-            echo '<hr />';
         }
 
-        if($convert) {
+        if($convert && $best['change'] >= 0.02) {
             $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
             var_dump($order);
         }
 
+        var_dump($change);
+        echo '<hr />';
         var_dump($best);
     }
 

@@ -107,9 +107,6 @@ class KrakenExchangeProvider extends ExchangeProvider implements ExchangeProvide
 
     public function convertHoldings(Exchange $exchange, string $wantedIso)
     {
-        $api = new KrakenApi(env('KRAKEN_API_KEY'), env('KRAKEN_API_SECRET'));
-
-        //$heldAsset = 'BCH';
         $heldAsset = $this->getHeldAsset();
 
         if($heldAsset['asset'] === $wantedIso) { //we already hold it
@@ -147,15 +144,6 @@ class KrakenExchangeProvider extends ExchangeProvider implements ExchangeProvide
 
             return $this->placeOrder($rate, 'sell', $heldAsset['balance']);
         }
-
-
-
-//        $order = $api->QueryPrivate('AddOrder', [
-//            'pair' => $exchangeRate->name,
-//            'type' => $type,
-//        ]);
-//
-//        var_dump($order);
     }
 
     public function placeOrder(ExchangeRate $rate, $type, $amount)
