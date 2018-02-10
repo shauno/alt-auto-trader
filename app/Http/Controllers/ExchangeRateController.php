@@ -89,9 +89,24 @@ class ExchangeRateController extends Controller
 
         }
 
-        if($convert && $best['change'] >= 0.02) {
-            $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
-            var_dump($order);
+        if($convert) {
+            if($best['change'] >= 0.02) {
+                $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
+                var_dump($order);
+            } else { //nothing is up well, should we retreat to USD?
+                $heldAsset = $provider->getHeldAsset();
+
+                //get the rate pair for what we have against USD
+                $rate = ExchangeRate::where('base_iso', $heldAsset['asset'])
+                    ->where('counter_iso', $provider->getUsdIso())
+                    ->first();
+
+                //if the asset we hold is down too much against USD, bitch out
+                if($rate && array_pop($change[$rate->name]) < -0.02) {
+                    $order = $provider->convertHoldings($exchange, $provider->getUsdIso());
+                    var_dump($order);
+                }
+            }
         }
 
         echo '<pre>';

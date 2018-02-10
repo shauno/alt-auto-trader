@@ -154,11 +154,33 @@ class KrakenExchangeProvider extends ExchangeProvider implements ExchangeProvide
             'pair' => $rate->name,
             'type' => $type,
             'ordertype' => 'market',
-            'volume' => $amount,
         ];
 
         if($type == 'buy') {
-            $params['oflags'] = 'viqc';
+            /* Calculate how much volume (required field) we can buy with our currency asset.
+             * For some reason Kraken stopped supporting the viqc flag which would have this unnecessary
+             * Obviously the order book can change during the calls latency, so who knows how well this will work :|
+             */
+
+            $orderBook = $api->QueryPublic('Depth', [
+                'pair' => $rate->name,
+            ]);
+
+            $price = 0;
+            $totalAmount = 0;
+
+            foreach($orderBook['result'][$rate->name]['asks'] as $ask) {
+                $totalAmount += $ask[0] * $ask[1];
+                if($totalAmount >= $amount) {
+                    $price = $ask[0];
+                    break;
+                }
+            }
+
+            $params['volume'] = $amount / $price;
+
+        } else {
+            $params['volume'] = $amount;
         }
 
         return $api->QueryPrivate('AddOrder', $params);
