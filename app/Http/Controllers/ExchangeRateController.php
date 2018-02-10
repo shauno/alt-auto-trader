@@ -94,9 +94,11 @@ class ExchangeRateController extends Controller
             var_dump($order);
         }
 
+        echo '<pre>';
         var_dump($change);
         echo '<hr />';
         var_dump($best);
+        echo '</pre>';
     }
 
     public function history(Exchange $exchange, string $name, Request $request)
