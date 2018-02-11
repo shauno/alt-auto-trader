@@ -110,9 +110,9 @@ class ExchangeRateController extends Controller
         }
 
         echo '<pre>';
-        var_dump($change);
-        echo '<hr />';
         var_dump($best);
+        echo '<hr />';
+        var_dump($change);
         echo '</pre>';
     }
 
