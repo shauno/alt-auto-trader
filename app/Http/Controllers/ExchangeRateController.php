@@ -90,17 +90,26 @@ class ExchangeRateController extends Controller
         }
 
         if($convert) {
+            $heldAsset = $provider->getHeldAsset();
+
+            //get the rate pair for what we have against USD
+            $rate = ExchangeRate::where('base_iso', $heldAsset['asset'])
+                ->where('counter_iso', $provider->getUsdIso())
+                ->first();
+
             if($best['change'] >= 0.03) {
-                $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
-                var_dump($order);
+                //only convert to new trend if its at least 2% better than the currency trend
+                $doConvert = true;
+                $rateDiff = $best['change'] - array_values($change[$rate->name])[0];
+                if($rate && $rateDiff < 0.02 && array_pop($change[$rate->name]) > 0) {
+                    $doConvert = false;
+                }
+
+                if($doConvert) {
+                    $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
+                    var_dump($order);
+                }
             } else { //nothing is up well, should we retreat to USD?
-                $heldAsset = $provider->getHeldAsset();
-
-                //get the rate pair for what we have against USD
-                $rate = ExchangeRate::where('base_iso', $heldAsset['asset'])
-                    ->where('counter_iso', $provider->getUsdIso())
-                    ->first();
-
                 //if the asset we hold is down too much against USD, bitch out
                 if($rate && array_pop($change[$rate->name]) < -0.02) {
                     $order = $provider->convertHoldings($exchange, $provider->getUsdIso());
