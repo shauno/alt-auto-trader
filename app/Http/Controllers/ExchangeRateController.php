@@ -97,7 +97,7 @@ class ExchangeRateController extends Controller
                 ->where('counter_iso', $provider->getUsdIso())
                 ->first();
 
-            if($best['change'] >= 0.03) {
+            if($best['change'] >= 0.02) {
                 //only convert to new trend if its at least 2% better than the currency trend
                 $doConvert = true;
                 $rateDiff = $best['change'] - array_values($change[$rate->name])[0];
