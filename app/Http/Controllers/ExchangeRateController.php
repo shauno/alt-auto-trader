@@ -90,7 +90,7 @@ class ExchangeRateController extends Controller
         }
 
         if($convert) {
-            if($best['change'] >= 0.04) {
+            if($best['change'] >= 0.03) {
                 $order = $provider->convertHoldings($exchange, $best['pair']->base_iso);
                 var_dump($order);
             } else { //nothing is up well, should we retreat to USD?

@@ -61,11 +61,11 @@ class EloquentExchangeRateRepository implements ExchangeRateRepositoryInterface
     public function trendData(ExchangeRate $exchangeRate)
     {
         return [
-            '60_0_min' => $this->trackTrend($exchangeRate, time()-(60*60), time()),
-            '30_0_min' => $this->trackTrend($exchangeRate, time()-(30*60), time()),
-            '30_15_min' => $this->trackTrend($exchangeRate, time()-(30*60), time()-(15*60)),
-            '15_0_min' => $this->trackTrend($exchangeRate, time()-(15*60), time()),
-            '5_0_min' => $this->trackTrend($exchangeRate, time()-(5*60), time()),
+            '15_0_min' => $this->trackTrend($exchangeRate, time()-(60*60), time()),
+            '7_0_min' => $this->trackTrend($exchangeRate, time()-(30*60), time()),
+            '7_3_min' => $this->trackTrend($exchangeRate, time()-(30*60), time()-(15*60)),
+            '3_0_min' => $this->trackTrend($exchangeRate, time()-(15*60), time()),
+            '2_0_min' => $this->trackTrend($exchangeRate, time()-(5*60), time()),
         ];
     }
 
