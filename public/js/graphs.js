@@ -19,6 +19,17 @@ jQuery(document).ready(function() {
 
 var graphs = {};
 function drawLog(exchange, name) {
+    name = name.replace('/', '-').toLowerCase();
+
+    var html = '' +
+        '<div id="log-'+name+'" style="display: inline-block;">' +
+        '   <div class="graph" style="width: 600px; height: 100px; display: block;">' +
+        '       <img src="/assets/coin-loader.gif" />' +
+        '   </div>' +
+        '   <div class="data"></div>' +
+        '</div>';
+    jQuery('#graph-container').append(html);
+
     jQuery.ajax({
         method: 'get',
         url: '/api/v1/exchange/'+exchange+'/exchange-rates/history/'+name+'?min-back=480',
@@ -48,15 +59,6 @@ function drawLog(exchange, name) {
                 }
             ];
 
-            name = name.replace('/', '-').toLowerCase();
-
-            var html = '' +
-                '<div id="log-'+name+'" style="display: inline-block;">' +
-                '   <div class="graph" style="width: 600px; height: 100px; display: block;"><img src="/assets/coin-loader.gif" /></div>' +
-                '   <div class="data"><pre>'+JSON.stringify(trendData, null, 2)+'</pre></div>' +
-                '</div>';
-            jQuery('#graph-container').append(html);
-
             graphs[name] = jQuery("#log-"+name+" .graph").plot(
                 graphdata,
                 {
@@ -65,6 +67,8 @@ function drawLog(exchange, name) {
                     selection: { mode: "x" }
                 }
             ).data("plot");
+
+            jQuery("#log-"+name+" .data").text(JSON.stringify(trendData, null, 2));
 
             jQuery("#log-"+name).bind("plotselected", function (event, ranges) {
                 var allData = graphs[name].getData()[0].data;
