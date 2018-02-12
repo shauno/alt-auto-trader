@@ -52,7 +52,7 @@ function drawLog(exchange, name) {
 
             var html = '' +
                 '<div id="log-'+name+'" style="display: inline-block;">' +
-                '   <div class="graph" style="width: 600px; height: 100px; display: block;"></div>' +
+                '   <div class="graph" style="width: 600px; height: 100px; display: block;"><img src="/assets/coin-loader.gif" /></div>' +
                 '   <div class="data"><pre>'+JSON.stringify(trendData, null, 2)+'</pre></div>' +
                 '</div>';
             jQuery('#graph-container').append(html);
