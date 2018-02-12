@@ -68,7 +68,7 @@ function drawLog(exchange, name) {
                 }
             ).data("plot");
 
-            jQuery("#log-"+name+" .data").text(JSON.stringify(trendData, null, 2));
+            jQuery("#log-"+name+" .data").html('<pre>'+JSON.stringify(trendData, null, 2)+'</pre>');
 
             jQuery("#log-"+name).bind("plotselected", function (event, ranges) {
                 var allData = graphs[name].getData()[0].data;
